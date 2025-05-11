@@ -14,13 +14,9 @@ return new class extends Migration
         //
         Schema::create('contact', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_recepteur');
-            $table->integer('id_emetteur');
+            $table->foreignId('id_recepteur')->constrained('users')->onDelete('cascade');
+            $table->foreignId('id_emetteur')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-        });
-        Schema::table('contact', function (Blueprint $table) {
-            $table->foreign('id_recepteur')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('id_emetteur')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

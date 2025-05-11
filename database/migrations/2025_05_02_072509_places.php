@@ -15,7 +15,8 @@ return new class extends Migration
         Schema::create('places', function (Blueprint $table) {
             $table->id();
             $table->boolean('is_alert')->default(0);
-            $table->string('pos');
+            $table->double('latitude');
+            $table->double('longitude');
             $table->string('designation')->nullable();
             $table->boolean('is_house')->default(0);
             $table->boolean('is_event')->default(0);

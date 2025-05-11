@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('prenom', 30);
             $table->string('email', 50)->unique();
             $table->string('password');
-            $table->string('pos', 255)->nullable();
+            $table->integer('latitude')->nullable();
+            $table->integer('longitude')->nullable();
             $table->datetime('last_update')->nullable();
             $table->datetime('last_connexion')->nullable();
 

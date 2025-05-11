@@ -16,11 +16,7 @@ return new class extends Migration
             $table->id();
             $table->timestamp('date')->useCurrent();
             $table->string('content', 255);
-            $table->integer('contact_id')->nullable();
-        });
-
-        Schema::table('messages', function (Blueprint $table) {
-            $table->foreign('contact_id')->references('id')->on('contact')->onDelete('cascade');
+            $table->foreignId('contact_id')->constrained('contact')->onDelete('cascade');
         });
     }
 

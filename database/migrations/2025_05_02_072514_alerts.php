@@ -15,6 +15,9 @@ return new class extends Migration
         Schema::create('alerts', function (Blueprint $table) {
             $table->id();
             $table->string('message', 255)->nullable();
+            $table->boolean('is_celebrated')->default(false);
+            $table->boolean('is_decorated')->default(false);
+            $table->date('expiration_date')->nullable()->default(date('Y-m-d', strtotime('+1 day')));
             $table->timestamps();
         });
         Schema::table('alerts', function (Blueprint $table) {

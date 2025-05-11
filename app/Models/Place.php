@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Place extends Model
 {
-    protected $fillable = ['is_alert', 'pos', 'designation', 'is_house', 'is_event', 'adresse', 'id_user'];
+    protected $fillable = ['is_alert', 'latitude', 'longitude', 'designation', 'is_house', 'is_event', 'adresse', 'id_user'];
 
     public function user() {
         return $this->belongsTo(User::class, 'id_user');
