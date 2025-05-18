@@ -8,7 +8,7 @@ use App\Models\Place;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 
-class MarkController
+class PlaceController
 {
     
     public function createHouse(Request $request)
@@ -146,9 +146,9 @@ class MarkController
         return response()->json(['message' => 'Alert created successfully'], 201);
     }
 
-    public function getMarksArround(Request $request)
+    public function getPlaces(Request $request)
     {
-        Log::channel('stderr')->info('Request getMarksAbove');
+        Log::channel('stderr')->info('Request getPlaces');
 
         if (!$request->user()) {
             Log::channel('stderr')->info('Unauthorized access attempt');
@@ -162,34 +162,35 @@ class MarkController
         ]);
 
         if ($validator->fails()) {
-            Log::channel('stderr')->info("Validation failed", $validator->errors()->toArray());
+            Log::channel('stderr')->info("Validation échoué", $validator->errors()->toArray());
             return response()->json(['errors' => $validator->errors()], 422); // Unprocessable Entity
         }
 
         // Récuperer les emplacement dans un rayon de 5km
-        $places = Place::whereRaw("ABS(latitude - ?) <= ?", [$request->latitude, 0.05])
-            ->whereRaw("ABS(longitude - ?) <= ?", [$request->longitude, 0.05])
+        $allPlaces = Place::whereRaw("ABS(latitude - ?) <= ?", [$request->latitude, 0.3])
+            ->whereRaw("ABS(longitude - ?) <= ?", [$request->longitude, 0.3])
             ->get();
 
-        Log::channel('stderr')->info('Nombre de places récupérées : ' . $places->count());
+        Log::channel('stderr')->info('Nombre de places récupérées : ' . $allPlaces->count());
 
-        if ($places->isEmpty()) { // S'il y a pas d'alerte à proximité
-            return response()->json(['message' => 'Aucun emplacement a proximite', 'marks' => []], 200);
+        if ($allPlaces->isEmpty()) { // S'il y a pas d'alerte à proximité
+            return response()->json(['message' => 'Aucun emplacement a proximite', 'hasPlaces' => false], 200);
         }
 
         // Récuperer les alertes
-        $marks = [];
-        foreach ($places as $place) {
+        $places = [];
+        foreach ($allPlaces as $place) {
             $alert = Alert::where('place_id', $place->id)
                 ->get();
 
             if (!$alert->isEmpty()) {
+
+                Log::channel('stderr')->info('Nombre d\'alertes récupérées : ' . $alert->count(), $alert->toArray());
                 
                 // Préparer les données de l'alerte
                 foreach ($alert as $a) {
-                    $alertData = [
-                        'alert_id' => $a->id,
-                        'place_id' => $a->place_id,
+                    $markData = [
+                        'id' => $a->id,
                         'message' => $a->message,
                         'is_celebrated' => $a->is_celebrated,
                         'is_decorated' => $a->is_decorated,
@@ -197,28 +198,33 @@ class MarkController
                         'created_at' => $a->created_at,
                     ];
 
-                    if (!isset($alerts[$place->id])) {
-                        $marks[$place->id] = [
-                            'place_id' => $place->id,
-                            'designation' => $place->designation,
-                            'adresse' => $place->adresse,
+                    if (!isset($places[$place->id])) {
+                        $places[$place->id] = [
+                            'id' => $place->id,
+                            'is_alert' => $place->is_alert,
                             'latitude' => $place->latitude,
                             'longitude' => $place->longitude,
+                            'designation' => $place->designation,
+                            'is_house' => $place->is_house,
+                            'is_event' => $place->is_event,
+                            'adresse' => $place->adresse,
+                            'author_id' => $place->id_user,
+                            'marks' => []
                         ];
                     }
 
-                    $marks[$place->id]['alerts'][] = $alertData;
+                    $places[$place->id]['marks'][] = $markData;
                 }
                 
             }
         }
 
-        Log::channel('stderr')->info('Nombre d\'alertes récupérées : ' . count($marks), $marks);
+        Log::channel('stderr')->info('Nombre d\'alertes récupérées : ' . count($places), $places);
 
-        if (!$marks) { // S'il y a pas d'alerte à proximité
-            return response()->json(['message' => 'Aucune alerte a proximite', 'marks' => []], 200);
+        if (!$places) { // S'il y a pas d'alerte à proximité
+            return response()->json(['message' => 'Aucune alerte a proximite', 'hasPlaces' => false], 200);
         }
 
-        return response()->json(['message' => 'Alerts found', 'marks' => $marks], 200);
+        return response()->json(['message' => 'Places found', 'places' => $places, 'hasPlaces' => true], 200);
     }
 }
