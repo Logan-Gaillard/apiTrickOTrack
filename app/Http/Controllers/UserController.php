@@ -16,8 +16,6 @@ class UserController
 
         $validator = Validator::make($request->all(), [
             'nickname' => 'required|unique:users,nickname|max:25|min:3',
-            'nom' => 'string|max:30',
-            'prenom' => 'string|max:30',
             'email' => 'required|email|unique:users,email|max:50',
             'password' => 'required|string|min:8|confirmed',
         ]);

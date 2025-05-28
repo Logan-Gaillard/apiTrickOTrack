@@ -24,7 +24,7 @@ class PlaceController
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'message' => 'nullable|string|max:150',
-            'adresse' => 'required|string|max:50',
+            'adresse' => 'required|string|max:100|min:10',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'is_celebrated' => 'required|boolean',
@@ -101,7 +101,7 @@ class PlaceController
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:40|min:5',
             'message' => 'nullable|string|max:150',
-            'adresse' => 'required|string|max:40|min:5',
+            'adresse' => 'required|string|max:100|min:10',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
         ]);
@@ -195,6 +195,7 @@ class PlaceController
                         'is_celebrated' => $a->is_celebrated,
                         'is_decorated' => $a->is_decorated,
                         'author_id' => $a->user_id,
+                        'author_nickname' => $a->user ? $a->user->nickname : 'Inconnu',
                         'created_at' => $a->created_at,
                     ];
 
@@ -209,6 +210,7 @@ class PlaceController
                             'is_event' => $place->is_event,
                             'adresse' => $place->adresse,
                             'author_id' => $place->id_user,
+                            'author_nickname' => $place->user ? $place->user->nickname : 'Inconnu',
                             'marks' => []
                         ];
                     }
