@@ -180,44 +180,46 @@ class PlaceController
         // Récuperer les alertes
         $places = [];
         foreach ($allPlaces as $place) {
-            $alert = Alert::where('place_id', $place->id)
+            $marks = Alert::where('place_id', $place->id)
+                ->orderBy('created_at', 'desc')
                 ->get();
 
-            if (!$alert->isEmpty()) {
+            if (!$marks->isEmpty()) {
 
-                Log::channel('stderr')->info('Nombre d\'alertes récupérées : ' . $alert->count(), $alert->toArray());
-                
-                // Préparer les données de l'alerte
-                foreach ($alert as $a) {
-                    $markData = [
-                        'id' => $a->id,
-                        'message' => $a->message,
-                        'is_celebrated' => $a->is_celebrated,
-                        'is_decorated' => $a->is_decorated,
-                        'author_id' => $a->user_id,
-                        'author_nickname' => $a->user ? $a->user->nickname : 'Inconnu',
-                        'created_at' => $a->created_at,
+                Log::channel('stderr')->info('Nombre d\'alertes récupérées : ' . $marks->count(), $marks->toArray());
+
+                // Préparer des l'marquages
+                $markDataList = [];
+                foreach ($marks as $mark) {
+                    $markDataList[] = [
+                        'id' => $mark->id,
+                        'message' => $mark->message,
+                        'is_celebrated' => $mark->is_celebrated,
+                        'is_decorated' => $mark->is_decorated,
+                        'author_id' => $mark->user_id,
+                        'author_nickname' => $mark->user ? $mark->user->nickname : 'Inconnu',
+                        'created_at' => $mark->created_at,
                     ];
-
-                    if (!isset($places[$place->id])) {
-                        $places[$place->id] = [
-                            'id' => $place->id,
-                            'is_alert' => $place->is_alert,
-                            'latitude' => $place->latitude,
-                            'longitude' => $place->longitude,
-                            'designation' => $place->designation,
-                            'is_house' => $place->is_house,
-                            'is_event' => $place->is_event,
-                            'adresse' => $place->adresse,
-                            'author_id' => $place->id_user,
-                            'author_nickname' => $place->user ? $place->user->nickname : 'Inconnu',
-                            'marks' => []
-                        ];
-                    }
-
-                    $places[$place->id]['marks'][] = $markData;
                 }
-                
+
+                if (!isset($places[$place->id])) {
+                    $places[$place->id] = [
+                        'id' => $place->id,
+                        'is_alert' => $place->is_alert,
+                        'latitude' => $place->latitude,
+                        'longitude' => $place->longitude,
+                        'designation' => $place->designation,
+                        'is_house' => $place->is_house,
+                        'is_event' => $place->is_event,
+                        'adresse' => $place->adresse,
+                        'author_id' => $place->id_user,
+                        'author_nickname' => $place->user ? $place->user->nickname : 'Inconnu',
+                        'marks' => []
+                    ];
+                }
+
+                // Affecter la liste triée des marks
+                $places[$place->id]['marks'] = $markDataList;
             }
         }
 
