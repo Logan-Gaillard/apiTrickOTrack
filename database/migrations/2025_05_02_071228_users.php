@@ -15,16 +15,16 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('nickname', 25)->unique();
-            $table->string('nom', 30);
-            $table->string('prenom', 30);
             $table->string('email', 50)->unique();
             $table->string('password');
-            $table->integer('latitude')->nullable();
-            $table->integer('longitude')->nullable();
+            $table->boolean('is_admin')->default(false);
+
+            $table->double('latitude')->nullable();
+            $table->double('longitude')->nullable();
             $table->datetime('last_update')->nullable();
             $table->datetime('last_connexion')->nullable();
-
-            $table->string('api_token', 80)->unique()->nullable()->default(null);
+            $table->datetime('date_last_position')->nullable();
+            $table->datetime('last_activity')->nullable();
             $table->timestamps();
         });
     }

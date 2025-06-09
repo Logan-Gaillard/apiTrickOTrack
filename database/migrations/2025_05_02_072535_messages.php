@@ -14,9 +14,10 @@ return new class extends Migration
         //
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('date')->useCurrent();
+            $table->timestamps();
             $table->string('content', 255);
-            $table->foreignId('contact_id')->constrained('contact')->onDelete('cascade');
+            $table->foreignId('author_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('contact_id')->constrained('contacts')->onDelete('cascade');
         });
     }
 

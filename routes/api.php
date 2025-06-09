@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PlaceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/mark/createEvent', [PlaceController::class, 'createEvent']);
 
     Route::post('/places/get', [PlaceController::class, 'getPlaces']);
+
+    Route::post('/sweeter/sharepos', [UserController::class, 'updateUserPosition']);
+    Route::post('/sweeter/getnearby', [UserController::class, 'getSweeterNearby']);
+
+    Route::post('/contact/getMessages', [ContactController::class, 'getMessages']);
+    Route::post('/contact/get', [ContactController::class, 'getOrCreate']);
+    Route::post('/contact/sendmsg', [ContactController::class, 'sendMessage']);
 });
 
 Route::post('/login', [UserController::class, 'login']);

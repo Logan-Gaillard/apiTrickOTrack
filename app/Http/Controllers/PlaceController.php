@@ -18,6 +18,9 @@ class PlaceController
         if (!$request->user()) {
             Log::channel('stderr')->info('Unauthorized access attempt');
             return response()->json(['message' => 'Unauthorized'], 401); // Unauthorized
+        }else{
+            $request->user()->last_activity = now();
+            $request->user()->save(); // Mettre à jour la dernière activité de l'utilisateur
         }
 
         // Effectuer la validation des données
@@ -95,6 +98,9 @@ class PlaceController
         // Regarder si l'utilisateur est authentifié (en utilisant Sanctum)
         if (!$request->user()) {
             return response()->json(['message' => 'Unauthorized'], 401); // Unauthorized
+        }else{
+            $request->user()->last_activity = now();
+            $request->user()->save(); // Mettre à jour la dernière activité de l'utilisateur
         }
 
         // Effectuer la validation des données
@@ -153,6 +159,9 @@ class PlaceController
         if (!$request->user()) {
             Log::channel('stderr')->info('Unauthorized access attempt');
             return response()->json(['message' => 'Unauthorized'], 401); // Unauthorized
+        }else{
+            $request->user()->last_activity = now();
+            $request->user()->save(); // Mettre à jour la dernière activité de l'utilisateur
         }
 
         // Effectuer la validation des données
